@@ -1,0 +1,52 @@
+const UniqueAsset = artifacts.require("UniqueAsset");
+
+contract("UniqueAsset", (accounts) => {
+  let uniqueAssetInstance;
+  const owner = accounts[0];
+  const recipient = accounts[1];
+
+  before(async () => {
+    uniqueAssetInstance = await UniqueAsset.deployed();
+  });
+
+  it("should deploy the contract with the correct name and symbol", async () => {
+    const name = await uniqueAssetInstance.name();
+    const symbol = await uniqueAssetInstance.symbol();
+    assert.equal(name, "UniqueAsset", "Name is incorrect");
+    assert.equal(symbol, "UNA", "Symbol is incorrect");
+  });
+
+  it("should allow minting a new NFT with unique metadata", async () => {
+    const hash = "unique_hash_1";
+    const metadataURI = "ipfs://your_metadata_uri_1";
+
+    const tokenId = await uniqueAssetInstance.awardItem(recipient, hash, metadataURI, {
+      from: owner,
+    });
+
+    assert.isAbove(tokenId.toNumber(), 0, "Token ID should be greater than 0");
+  });
+
+  it("should prevent minting NFT with a duplicate hash", async () => {
+    const hash = "unique_hash_1"; // Reusing the hash from the previous test
+    const metadataURI = "ipfs://your_metadata_uri_2";
+
+    try {
+      await uniqueAssetInstance.awardItem(recipient, hash, metadataURI, {
+        from: owner,
+      });
+      assert.fail("Minting with a duplicate hash should fail");
+    } catch (error) {
+      assert.include(error.message, "revert", "Expected a revert error");
+    }
+  });
+
+  it("should set the correct token URI for minted NFTs", async () => {
+    const tokenId = 1; // Assuming the first token was minted in the previous tests
+    const expectedMetadataURI = "ipfs://your_metadata_uri_1";
+
+    const tokenURI = await uniqueAssetInstance.tokenURI(tokenId);
+
+    assert.equal(tokenURI, expectedMetadataURI, "Token URI is incorrect");
+  });
+});
