@@ -46,3 +46,11 @@ To use this code, you would typically do the following:
 4. After uploading, you can call the `awardItem` function in the smart contract to mint NFTs, providing the IPFS hash and associated metadata URI.
 
 Remember to customize the API keys, file paths, and other parameters to suit your specific use case.
+
+TEST DESCRIPTION
+These tests cover the following aspects:
+
+1.Deployment of the contract with the correct name and symbol.
+2.Minting a new NFT with unique metadata and ensuring the token ID is greater than 0.
+3.Preventing the minting of an NFT with a duplicate hash.
+4.Verifying that the token URI is set correctly for minted NFTs.
